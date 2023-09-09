@@ -2,6 +2,7 @@
 
 package com.myapp.tipcalculator
 
+import android.annotation.SuppressLint
 import android.icu.text.NumberFormat
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,18 +15,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.myapp.tipcalculator.ui.theme.TipCalculatorTheme
+import java.time.temporal.TemporalAmount
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +54,17 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun TipCalculator(modifier: Modifier = Modifier) {
+    //The amountInput variable holds the state to display in UI.
+    //We have use remember and mutableState.
+    // the value get updated each time so we have use mutablestate and remember is use to hold that value and update accordingly.
+    var amountInput by remember { mutableStateOf("") }
+    //We have add the amount variable in which we convert the user input value(String) to double or Null.
+    // we have added the elvis operator ?:
+    //If the user entered any invalid value then return null. The elvis operator calls and print 0.0
+    val amount = amountInput.toDoubleOrNull() ?: 0.0
+    //We have add new tip variable which stores the calculate function and pass the amount.
+    val tip = calculateTip(amount)
+
     Column(
         modifier = Modifier.padding(40.dp),
         verticalArrangement = Arrangement.Center,
@@ -56,32 +76,46 @@ fun TipCalculator(modifier: Modifier = Modifier) {
                 .padding(bottom = 17.dp)
                 .align(Alignment.Start)
         )
-        EditNumberField(modifier = Modifier
-            .padding(bottom = 32.dp)
-            .fillMaxWidth())
+        EditNumberField(
+            value= amountInput,
+            onValueChange={amountInput=it},
+            modifier = Modifier
+                .padding(bottom = 32.dp)
+                .fillMaxWidth()
+        )
         Text(
-            text = stringResource(R.string.tip_amount, "$0.00"),
+            text = stringResource(R.string.tip_amount, tip),
             style = MaterialTheme.typography.displaySmall,
 
             )
+
         Spacer(modifier = Modifier.height(150.dp))
     }
 
 }
-
+//This calculateTip Function is use to calculate the Tip amount.
 private fun calculateTip(amt: Double, tipPercent: Double = 15.0): String {
     val tip = tipPercent / 100 * amt
+    //NumberFormat ,method is use to format the tip into currency
     return NumberFormat.getCurrencyInstance().format(tip)
 }
 
+@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditNumberField(modifier: Modifier) {
-    val amountInput = "0"
+fun EditNumberField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier) {
     TextField(
-        value = amountInput,
-        onValueChange = {},
-        modifier = modifier
+        value = value,
+        // The onValueChange calls when the value changes.
+        onValueChange = onValueChange,
+        // Now we use the label parameter using lambda expression.
+        //We call the Text function that tales the string input of bill amount.
+        label = { Text(stringResource(R.string.bill_Amount)) },
+        //Add the single line parameter which accepts the boolean value.
+        singleLine = true,
+        //Add keyboardOptions parameter that take KeyBoardOptions function.
+        //The KeyBoard function gives the keyboard option or type to user to add string,Number,Url,Email etc.
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = modifier
     )
 }
 
