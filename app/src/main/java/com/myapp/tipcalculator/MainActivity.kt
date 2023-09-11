@@ -7,6 +7,7 @@ import android.icu.text.NumberFormat
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -76,9 +77,22 @@ fun TipCalculator(modifier: Modifier = Modifier) {
                 .align(Alignment.Start)
         )
         EditNumberField(
-            value = amountInput, onValueChange = { changedAmount ->
+            label = R.string.bill_Amount,
+            value = amountInput,
+            onValueChange = { changedAmount ->
                 amountInput = changedAmount
-            }, modifier = Modifier
+            },
+            modifier = Modifier
+                .padding(bottom = 32.dp)
+                .fillMaxWidth()
+        )
+        EditNumberField(
+            label = R.string.how_the_service,
+            value = amountInput,
+            onValueChange = { changedAmount ->
+                amountInput = changedAmount
+            },
+            modifier = Modifier
                 .padding(bottom = 32.dp)
                 .fillMaxWidth()
         )
@@ -109,17 +123,29 @@ private fun formatAmount(amounts: Double): String {
     return NumberFormat.getCurrencyInstance().format(amounts)
 }
 
+/**
+ * The EditNumberField(), is used for both bill amount and Tip Amoumt calculation.
+ * So we Add label in the parameter.
+ * When we use this function in the [TipCalculator] the label value change according to the requirement.
+ * But we can see the label is of type Int.So we use @StringRes annotation.
+ * @StringRes is the typeSafe way to use String Resource. It shows the int to be passed is a string resource from value/string.xml.
+ */
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditNumberField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier) {
+fun EditNumberField(
+    @StringRes label: Int,
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     TextField(
         value = value,
         // The onValueChange calls when the value changes.
         onValueChange = onValueChange,
         // Now we use the label parameter using lambda expression.
         //We call the Text function that tales the string input of bill amount.
-        label = { Text(stringResource(R.string.bill_Amount)) },
+        label = { Text(stringResource(label)) },
         //Add the single line parameter which accepts the boolean value.
         singleLine = true,
         //Add keyboardOptions parameter that take KeyBoardOptions function.
