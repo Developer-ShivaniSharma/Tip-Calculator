@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -22,7 +21,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,11 +28,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.myapp.tipcalculator.ui.theme.TipCalculatorTheme
-import java.time.temporal.TemporalAmount
+import androidx.compose.ui.unit.dp as dp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,17 +55,17 @@ class MainActivity : ComponentActivity() {
 fun TipCalculator(modifier: Modifier = Modifier) {
     //The amountInput variable holds the state to display in UI.
     //We have use remember and mutableState.
-    // the value get updated each time so we have use mutablestate and remember is use to hold that value and update accordingly.
+    // the value get updated each time so we have use mutable state and remember is use to hold that value and update accordingly.
     var amountInput by remember { mutableStateOf("") }
     //We have add the amount variable in which we convert the user input value(String) to double or Null.
     // we have added the elvis operator ?:
     //If the user entered any invalid value then return null. The elvis operator calls and print 0.0
-    val amount = amountInput.toDoubleOrNull() ?: 0.0
+    val amount: Double = amountInput.toDoubleOrNull() ?: 0.0
     //We have add new tip variable which stores the calculate function and pass the amount.
-    val tip = calculateTip(amount)
+    val tip: Double = calculateTip(amount)
 
     Column(
-        modifier = Modifier.padding(40.dp),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -77,27 +76,37 @@ fun TipCalculator(modifier: Modifier = Modifier) {
                 .align(Alignment.Start)
         )
         EditNumberField(
-            value= amountInput,
-            onValueChange={amountInput=it},
-            modifier = Modifier
+            value = amountInput, onValueChange = { changedAmount ->
+                amountInput = changedAmount
+            }, modifier = Modifier
                 .padding(bottom = 32.dp)
                 .fillMaxWidth()
         )
         Text(
-            text = stringResource(R.string.tip_amount, tip),
+            text = stringResource(R.string.tip_amount, formatAmount(tip)),
+            style = MaterialTheme.typography.displaySmall,
+        )
+        Spacer(modifier = modifier.height(10.dp))
+        Text(
+            text = stringResource(R.string.total_amount, amount, tip, amount + tip),
             style = MaterialTheme.typography.displaySmall,
 
-            )
 
+            )
         Spacer(modifier = Modifier.height(150.dp))
     }
 
 }
+
 //This calculateTip Function is use to calculate the Tip amount.
-private fun calculateTip(amt: Double, tipPercent: Double = 15.0): String {
-    val tip = tipPercent / 100 * amt
+private fun calculateTip(amt: Double, tipPercent: Double = 15.0): Double {
+    return (tipPercent * amt) / 100
+}
+
+// The FormatAmount function convert any amount into currency.
+private fun formatAmount(amounts: Double): String {
     //NumberFormat ,method is use to format the tip into currency
-    return NumberFormat.getCurrencyInstance().format(tip)
+    return NumberFormat.getCurrencyInstance().format(amounts)
 }
 
 @SuppressLint("UnrememberedMutableState")
