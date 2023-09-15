@@ -1,8 +1,7 @@
 package com.myapp.tipcalculator
 
+import org.junit.Assert.assertEquals
 import org.junit.Test
-
-import org.junit.Assert.*
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -11,7 +10,11 @@ import org.junit.Assert.*
  */
 class ExampleUnitTest {
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun calculateTipPercent_20percent() {
+        val amount = 10.0
+        val tipPercent = 20.0
+        val actualTip = calculateTip(amount = amount, tipPercent = tipPercent, roundUp = false)
+        val expectedtip = 2.0
+        assertEquals(expectedtip, actualTip)
     }
 }

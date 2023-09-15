@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -141,8 +142,9 @@ fun TipCalculator(modifier: Modifier = Modifier) {
 
 
 //This calculateTip Function is use to calculate the Tip amount.
-private fun calculateTip(amt: Double, tipPercent: Double =15.0,roundUp: Boolean): Double {
-    var tip = (tipPercent * amt) / 100
+@VisibleForTesting
+internal fun calculateTip(amount: Double, tipPercent: Double =15.0, roundUp: Boolean): Double {
+    var tip = (tipPercent * amount) / 100
     // the kotlin.math.ceil roundup the value Exp: 10.6 will be round up as 11
     if(roundUp){
         tip = kotlin.math.ceil(tip)
@@ -151,7 +153,8 @@ private fun calculateTip(amt: Double, tipPercent: Double =15.0,roundUp: Boolean)
 }
 
 // The FormatAmount function convert any amount into currency.
-private fun formatAmount(amounts: Double): String {
+@VisibleForTesting
+internal fun formatAmount(amounts: Double): String {
     //NumberFormat ,method is use to format the tip into currency
     return NumberFormat.getCurrencyInstance().format(amounts)
 }
