@@ -15,6 +15,6 @@ class ExampleUnitTest {
         val tipPercent = 20.0
         val actualTip = calculateTip(amount = amount, tipPercent = tipPercent, roundUp = false)
         val expectedtip = 2.0
-        assertEquals(expectedtip, actualTip)
+        assertEquals(expectedtip, actualTip,0.0)
     }
 }
